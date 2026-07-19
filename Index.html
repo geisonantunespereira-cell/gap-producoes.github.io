@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geison Antunes Pereira - Portfólio Audiovisual</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #120b1a; color: #f5f2f8; overflow: hidden; }
+        
+        /* Container dos Slides - Transição Suave */
+        .deck-container { position: relative; width: 100vw; height: 100vh; display: flex; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide { min-width: 100vw; height: 100vh; display: flex; padding: 60px 80px; position: relative; background: #120b1a; }
+        
+        /* Slide da Capa */
+        .slide-cover { padding: 0; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #120b1a 40%, #25143a 100%); }
+        .cover-text { width: 50%; padding-left: 80px; z-index: 2; opacity: 0; transform: translateX(-40px); transition: all 0.8s ease 0.2s; }
+        .slide.active .cover-text { opacity: 1; transform: translateX(0); }
+        .cover-text h1 { font-size: 3.5rem; color: #e5b80b; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        .cover-text p { font-size: 1.2rem; color: #f5f2f8; max-width: 500px; line-height: 1.6; opacity: 0.9; }
+        
+        .cover-image-container { width: 50%; height: 100%; display: flex; justify-content: center; align-items: center; background: #08040d; overflow: hidden; position: relative; }
+        .cover-image-container img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.02); animation: gentleZoom 12s infinite alternate ease-in-out; }
+        .cover-image-container::before { content: ''; position: absolute; top: 0; left: 0; width: 20%; height: 100%; background: linear-gradient(to right, #120b1a, transparent); z-index: 2; }
+
+        /* Animações Internas de Conteúdo */
+        .slide-content { width: 100%; max-width: 1200px; display: flex; flex-direction: column; justify-content: center; opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s; }
+        .slide.active .slide-content { opacity: 1; transform: translateY(0); }
+        
+        .slide-layout-split { display: flex; gap: 50px; align-items: center; height: 80%; }
+        .text-column { flex: 1; }
+        .image-column { flex: 1; display: flex; justify-content: center; position: relative; }
+        
+        /* Filtros sutis na foto */
+        .image-column img { max-width: 100%; max-height: 65vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(180, 70, 255, 0.25); border: 1px solid #b446ff; object-fit: contain; filter: contrast(1.06) brightness(0.95) saturate(1.02); }
+
+        h2 { font-size: 2.8rem; color: #e5b80b; margin-bottom: 30px; border-bottom: 2px solid #b446ff; padding-bottom: 10px; display: inline-block; }
+        p { font-size: 1.25rem; line-height: 1.7; color: #f5f2f8; margin-bottom: 20px; }
+        
+        /* Lista */
+        ul { list-style: none; }
+        li { font-size: 1.2rem; line-height: 1.6; margin-bottom: 15px; position: relative; padding-left: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease; }
+        .slide.active li { opacity: 1; transform: translateX(0); }
+        .slide.active li:nth-child(1) { transition-delay: 0.3s; }
+        .slide.active li:nth-child(2) { transition-delay: 0.5s; }
+        .slide.active li:nth-child(3) { transition-delay: 0.7s; }
+        .slide.active li:nth-child(4) { transition-delay: 0.9s; }
+        li::before { content: '•'; color: #b446ff; font-size: 1.8rem; position: absolute; left: 0; top: -5px; }
+
+        /* Grid de Links */
+        .links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .btn-link { display: flex; align-items: center; padding: 15px 20px; background: rgba(37, 20, 58, 0.6); border: 1px solid #b446ff; border-radius: 8px; color: #f5f2f8; text-decoration: none; font-size: 1.1rem; font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn-link:hover { background: #b446ff; color: #120b1a; transform: translateY(-4px); box-shadow: 0 8px 25px rgba(180, 70, 255, 0.4); }
+        .btn-youtube:hover { background: #ff0000; border-color: #ff0000; color: #fff; }
+        .btn-soundcloud:hover { background: #ff5500; border-color: #ff5500; color: #fff; }
+        .btn-instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: transparent; color: #fff; }
+        .btn-link span { margin-right: 12px; font-size: 1.3rem; }
+
+        /* Controles de Navegação */
+        .nav-controls { position: fixed; bottom: 30px; right: 40px; display: flex; gap: 15px; z-index: 10; }
+        .nav-btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #e5b80b; background: rgba(18, 11, 26, 0.85); color: #e5b80b; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .nav-btn:hover:not(:disabled) { background: #e5b80b; color: #120b1a; transform: scale(1.05); }
+        .nav-btn:disabled { opacity: 0.25; cursor: not-allowed; border-color: #f5f2f8; color: #f5f2f8; }
+
+        @keyframes gentleZoom { from { transform: scale(1.01); } to { transform: scale(1.06); } }
+    </style>
+</head>
+<body>
+
+    <div class="deck-container" id="deck">
+        
+        <!-- Slide 1: Capa -->
+        <div class="slide slide-cover active">
+            <div class="cover-text">
+                <h1>Geison Antunes Pereira</h1>
+                <p>Música | Produção | Cultura | Identidade<br><br>Valorizando talentos, contando histórias e fortalecendo a cultura local.</p>
+            </div>
+            <div class="cover-image-container">
+                <img src="foto capa.png" alt="Geison Antunes Pereira">
+            </div>
+        </div>
+
+        <!-- Slide 2: Sobre Mim -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Sobre mim</h2>
+                <p>Sou músico, produtor e criador de projetos relacionados à música e cultura.</p>
+                <p>Atuo com composição, produção musical, gravação, edição e desenvolvimento de ideias que unem tecnologia, arte e identidade regional.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Experiência Profissional -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Experiência profissional</h2>
+                <ul>
+                    <li>Músico tecladista e produtor musical na Interprise Banda Show (2007–2022)</li>
+                    <li>Musicoterapeuta no Instituto Santa Dulce / CAPS (2022–2025)</li>
+                    <li>Experiência com atividades musicais, coordenação de grupos, apresentações e inclusão social através da arte.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: GAP Produções -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>GAP Produções</h2>
+                <p>Estúdio independente voltado para a criação e fonografia musical.</p>
+                <p>Principais frentes de atuação:</p>
+                <ul>
+                    <li>Gravação e produção de músicas</li>
+                    <li>Arranjos personalizados e edição de áudio</li>
+                    <li>Captação de áudio para diversos formatos</li>
+                    <li>Desenvolvimento de projetos autorais e trilhas sonoras</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Portfólio Audiovisual -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Portfólio Digital & Redes Sociais</h2>
+                <p>Clique nos botões abaixo para acessar os registros e produções diretamente:</p>
+                <div class="links-grid">
+                    <a href="https://www.youtube.com/watch?v=xdHIGat5koM" target="_blank" class="btn-link btn-youtube"><span>🎵</span> Live Interprise Banda Show</a>
+                    <a href="https://www.youtube.com/watch?v=MQpBaUCuMN0" target="_blank" class="btn-link btn-youtube"><span>🎬</span> Bruno Casimiro - Filho (Clipe)</a>
+                    <a href="https://www.youtube.com/watch?v=fAWUCGJkKUU" target="_blank" class="btn-link btn-youtube"><span>🎬</span> André Melo - Vai Beber O Que Bebi</a>
+                    <a href="https://www.youtube.com/watch?v=wIh69ohNiYc" target="_blank" class="btn-link btn-youtube"><span>🎬</span> André Melo - Amiga Vodka (Clipe)</a>
+                    <a href="https://soundcloud.com/gaphomestudio" target="_blank" class="btn-link btn-soundcloud"><span>🎹</span> SoundCloud GAP Home Studio</a>
+                    <a href="https://www.instagram.com/geisonantunespereira?utm_source=qr&igsh=MTJqaXM2NGVpcWQwZQ==" target="_blank" class="btn-link btn-instagram"><span>📸</span> Instagram Profissional</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Competências -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Conhecimentos e competências</h2>
+                <ul>
+                    <li>Teclado e harmonia musical aplicada</li>
+                    <li>Produção musical em DAWs (Cubase, UAD Luna)</li>
+                    <li>Gravação, mixagem e edição de áudio</li>
+                    <li>Arranjos musicais e composição de trilhas</li>
+                    <li>Criação e captação para projetos audiovisuais</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Projeto Cultural -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Projeto cultural: Cajati É Meu Lugar</h2>
+                <p>Projeto musical e audiovisual focado na valorização da memória, história e identidade de Cajati.</p>
+                <ul>
+                    <li>Composição e produção musical dedicada à história local</li>
+                    <li>Registros em vídeo</li>
+                    <li>Divulgação cultural e resgate da história regional</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Equipamentos -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Equipamentos e estrutura</h2>
+                <div class="slide-layout-split">
+                    <div class="text-column">
+                        <ul>
+                            <li>Teclado Workstation Korg Krome 73</li>
+                            <li>Interface de Áudio Universal Audio Volt 2</li>
+                            <li>Microfone Condensador Sennheiser MK4</li>
+                            <li>Monitores de Referência Yamaha HS-50</li>
+                            <li>Softwares de produção: UAD Luna e Cubase</li>
+                        </ul>
+                    </div>
+                    <div class="image-column">
+                        <img src="estudio.jpg" alt="Home Studio Setup">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Objetivo -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Objetivo</h2>
+                <p>Desenvolver projetos que aproximem as pessoas através da música, registrem histórias locais e utilizem a tecnologia e a arte como ferramentas de expressão.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Setas de Controle -->
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn" disabled onclick="navigate(-1)">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="navigate(1)">→</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const deck = document.getElementById('deck');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function navigate(direction) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide += direction;
+            
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            
+            deck.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            slides[currentSlide].classList.add('active');
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) navigate(1);
+            if (e.key === 'ArrowLeft' && currentSlide > 0) navigate(-1);
+        });
+    </script>
+</body>
+</html>
